@@ -9,6 +9,8 @@ D6B has a couple of commands, most of them are quite simple. All commands use th
  - `help`: This is the default Discord.py implementation of the help command as it hasn't been altered yet.
  - `nick`: Sets your nickname in the server to a titled version of what's fed to the command.
  - `sad`: Reponds with "*S A D.*".
+ - `subreddits`: Displays the configured subreddits for Banhammer in a neat embed.
+ - `reactions`: Shows all the reactions that a subreddit has configured.
 
 ## Usage
 Though this bot isn't designed to be used by others, it is a GPL3.0 project which means you're free to use its code to build your own bot! It also serves as a good starting point for people trying to become familiar with the Banhammer framework though the [Banhacker bot](https://github.com/Dan6erbond/Banhacker/) may suit your needs better.
