@@ -8,10 +8,9 @@ from banhammer import banhammer
 
 desc = "Dan6erbond support bot."
 bot = commands.Bot("$", description=desc)
-bh = banhammer.Banhammer(login.get_reddit(), embed_color=discord.Colour(0).from_rgb(207, 206, 23))
+bh = banhammer.Banhammer(login.get_reddit(), bot=bot, change_presence=True, embed_color=discord.Colour(0).from_rgb(67, 181, 129))
 bh.add_subreddits("dan6erbond")
-bh.add_subreddits("substarters")
-bh.add_subreddits("jealousasfuck")
+
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -31,6 +30,16 @@ async def on_member_join(member):
 async def on_ready():
     print(str(bot.user) + ' is running.')
     bh.run()
+
+
+@bot.command()
+async def subreddits(ctx):
+    await ctx.send(embed=bh.get_subreddits_embed())
+
+
+@bot.command()
+async def reactions(ctx):
+    await ctx.send(embed=bh.get_reactions_embed())
 
 
 @bh.new(subreddit="dan6erbond")
