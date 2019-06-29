@@ -75,7 +75,7 @@ async def on_message(m):
 async def on_raw_reaction_add(p):
     c = bot.get_channel(p.channel_id)
     u = c.guild.get_member(p.user_id)
-    if u.bot:
+    if u.bot or u.id != 383657174674702346:
         return
     m = await c.fetch_message(p.message_id)
     e = p.emoji.name if not p.emoji.is_custom_emoji() else "<:{}:{}>".format(p.emoji.name, p.emoji.id)
