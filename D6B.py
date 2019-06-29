@@ -79,25 +79,12 @@ async def on_raw_reaction_add(p):
 
 @bot.command()
 async def nick(ctx, *, new_nick):
-    # await ctx.send(string.capwords(new_nick))
     await ctx.author.edit(nick=new_nick.title())
 
 
 @bot.command()
 async def sad(ctx):
     await ctx.send("*S A D.*")
-
-
-async def analyze_idealists():
-    Idealist = bot.get_guild(568012485320245258)
-    substarters = bot.get_guild(531782661564399626)
-
-    print(Idealist)
-    print(substarters)
-
-    for member in substarters.members:
-        if Idealist.get_member(member.id) is not None:
-            print("<@!{}>".format(member.id))
 
 
 config = configparser.ConfigParser()
