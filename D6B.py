@@ -59,7 +59,7 @@ async def addsub(ctx, subreddit):
         for cat in ctx.guild.categories:
             if cat.id == 594461395039551519:
                 bh.add_subreddits(sub["sub"])
-                await ctx.guild.create_text_channel(subreddit, category=cat)
+                channel = await ctx.guild.create_text_channel("🔨" + subreddit, category=cat)
                 subs.append({
                     "sub": subreddit,
                     "id": channel.id
