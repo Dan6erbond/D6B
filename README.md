@@ -1,5 +1,5 @@
 # D6B
-D6B is Dan6erbond's personal Discord bot. In addition to a swear filter it has a couple of commands as well as implements the [Banhammer framework](https://github.com/Dan6erbond/Banhammer.py) to aid in moderating Dan6erbond's subreddits.
+D6B is Dan6erbond's personal Discord bot. In addition to a swear filter it has a couple of commands as well as implements [Banhammer.py](https://github.com/Dan6erbond/Banhammer.py) to aid in moderating Dan6erbond's subreddits.
 
 ## Key Features
 Besides the commands the bot is setup to welcome new users that join the guild with a default welcome message as well as stream reports and new items on [/r/dan6erbond](https://www.reddit.com/r/dan6erbond) and other subreddits to a dedicated channel in which reactions are added for Dan6erbond to moderate the subreddit.
@@ -13,11 +13,15 @@ D6B has a couple of commands, most of them are quite simple. All commands use th
  - `reactions`: Shows all the reactions that a subreddit has configured.
 
 ## Usage
-Though this bot isn't designed to be used by others, it is a GPL3.0 project which means you're free to use its code to build your own bot! It also serves as a good starting point for people trying to become familiar with the Banhammer framework though the [Banhacker bot](https://github.com/Dan6erbond/Banhacker/) may suit your needs better.
+Though this bot isn't designed to be used by others, it is a GPL3.0 project which means you're free to use its code to build your own bot! It also serves as a good starting point for people trying to become familiar with the Banhammer.py. [Banhacker](https://github.com/Dan6erbond/Banhacker/) is another bot that implements Banhammer.py and may suit your needs better.
 
-A improved swear filter is being worked on so that could be of use to some users once it has been tested and released. If you do want to use the code, make sure you have the dependancies, namely [Discord.py](https://discordpy.readthedocs.io) if you want the base features as well as [PRAW](https://praw.readthedocs.io) if you want to use the Banhammer framework. Those can be installed with the following terminal commands:
+A improved swear filter is being worked on so that could be of use to some users once it has been tested and released. If you do want to use the code, make sure you have the dependancies, namely [Discord.py](https://discordpy.readthedocs.io) if you want the base features as well as [PRAW](https://praw.readthedocs.io) if you want to use the Banhammer.py. Those can be installed with the following terminal commands:
  - `pip3 install -U discord.py`
  - `pip3 install -U praw`
+ 
+## Links
+ - [Banhammer.py](https://github.com/Dan6erbond/Banhammer.py)
+ - [Discord server](https://discord.gg/wMEyKZk)
 
 ## Roadmap
  - [ ] More dynamic subreddit moderation.
