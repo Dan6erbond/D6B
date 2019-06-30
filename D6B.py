@@ -111,7 +111,7 @@ async def on_message(m):
     if m.author.bot:
         return
 
-    swear = False
+    '''swear = False
 
     swears = list()
     with open("files/swear_words.json") as f:
@@ -121,14 +121,13 @@ async def on_message(m):
         if not swear:
             for result in fuzzle.find(swears, word):
                 if result["accuracy"] > 0.9:
-                    print(result)
                     swear = True
                     break
         else:
             break
 
     if swear: await m.channel.send("Watch yo mouth!")
-    if swear and m.author.id in [483880415124520971]: await m.delete()
+    if swear and m.author.id in [483880415124520971]: await m.delete()'''
 
     if m.channel.category is not None and m.channel.category.id == 594461395039551519:
         item = bh.get_item(m.content)
