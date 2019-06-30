@@ -2,7 +2,7 @@
 D6B is Dan6erbond's personal Discord bot. In addition to a swear filter it has a couple of commands as well as implements [Banhammer.py](https://github.com/Dan6erbond/Banhammer.py) to aid in moderating Dan6erbond's subreddits.
 
 ## Key Features
-Besides the commands the bot is setup to welcome new users that join the guild with a default welcome message as well as stream reports and new items on [/r/dan6erbond](https://www.reddit.com/r/dan6erbond) and other subreddits to a dedicated channel in which reactions are added for Dan6erbond to moderate the subreddit.
+Besides the commands the bot is setup to welcome new users that join the guild with a default welcome message as well as filter out swear words sent by certain people or warn those who haven't been added to the blacklist yet.
 
 ### Commands
 D6B has a couple of commands, most of them are quite simple. All commands use the `$` prefix:
@@ -24,7 +24,9 @@ Though this bot isn't designed to be used by others, it is a GPL3.0 project whic
 
 [Banhacker](https://github.com/Dan6erbond/Banhacker/) is a Mariavi bot that implements Banhammer.py in a different way and may be what you're looking for if you just want to handle one subreddit.
 
-A improved swear filter is being worked on so that could be of use to some users once it has been tested and released. If you do want to use the code, make sure you have the dependancies, namely [Discord.py](https://discordpy.readthedocs.io) if you want the base features as well as [PRAW](https://praw.readthedocs.io) if you want to use the Banhammer.py. Those can be installed with the following terminal commands:
+A improved swear filter is being worked on so that could be of use to some users once it has been tested and released.
+
+If you do want to use the code, make sure you have the dependancies, namely [Discord.py](https://discordpy.readthedocs.io) if you want the base features as well as [PRAW](https://praw.readthedocs.io) if you want to use the Banhammer.py. Those can be installed with the following terminal commands:
  - `pip3 install -U discord.py`
  - `pip3 install -U praw`
  
