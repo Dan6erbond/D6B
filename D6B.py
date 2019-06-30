@@ -95,7 +95,7 @@ async def delsub(ctx):
 @bh.comments()
 @bh.mail()
 @bh.reports()
-@bh.reports("Anti-Evil Operations")
+@bh.mod_actions("Anti-Evil Operations")
 async def handle_item(item):
     with open("files/subreddits.json") as f:
         subs = json.loads(f.read())
