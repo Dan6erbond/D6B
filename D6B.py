@@ -9,7 +9,7 @@ import login
 from banhammer import banhammer
 
 bot = commands.Bot("$", description="Dan6erbond support bot.")
-bh = banhammer.Banhammer(login.get_reddit(), bot=bot, change_presence=True,
+bh = banhammer.Banhammer(login.get_reddit(), bot=bot, change_presence=True, loop_time=10*60,
                          embed_color=discord.Colour(0).from_rgb(67, 181, 129))
 
 
