@@ -1,14 +1,37 @@
-import os
-
 import praw
 
+from . import exceptions
 from . import yaml
+from . import item as reddititem
+
+
+class ReactionPayload:
+    def __init__(self):
+        self.item = None
+        self.user = "Banhammer"
+        self.actions = list()
+        self.approved = False
+        self.reply = ""
+
+    def __str__(self):
+        return self.get_message()
+
+    def feed(self, user, item, approved, reply=""):
+        self.item = item
+        self.approved = approved
+        self.reply = reply
+
+    def get_message(self):
+        return "**{} {} by {}!**\n\n" \
+               "{} by /u/{}:\n\n" \
+               "{}".format(self.item.type.title(), " and ".join(self.actions), self.user,
+                           self.item.type.title(), self.item.get_author_name(), self.item.get_url())
 
 
 class Reaction:
 
     def __init__(self, reddit, dict={}, emoji="", type="", flair="", approve=False, mark_nsfw=False, lock=False,
-                 reply="", ban=None, min_votes=1):
+                 reply="", distinguish_reply=True, sticky_reply=True, ban=None, archive=False, mute=False, min_votes=1):
         self.reddit = reddit
 
         self.emoji = dict["emoji"] if "emoji" in dict else emoji
@@ -20,7 +43,14 @@ class Reaction:
         self.mark_nsfw = dict["mark_nsfw"] if "mark_nsfw" in dict else mark_nsfw
         self.lock = dict["lock"] if "lock" in dict else lock
         self.reply = dict["reply"] if "reply" in dict else reply
+
+        self.distinguish_reply = dict["distinguish_reply"] if "distinguish_reply" in dict else distinguish_reply
+        self.sticky_reply = dict["sticky_reply"] if "sticky_reply" in dict else sticky_reply
+        if self.sticky_reply: self.distinguish_reply = True
+
         self.ban = dict["ban"] if "ban" in dict else ban
+        self.archive = dict["archive"] if "archive" in dict else archive
+        self.mute = dict["mute"] if "mute" in dict else mute
         self.min_votes = dict["min_votes"] if "min_votes" in dict else min_votes
 
         self.item = None
@@ -54,119 +84,92 @@ class Reaction:
             "lock": self.lock,
             "reply": self.reply,
             "ban": self.ban,
+            "archive": self.archive,
+            "mute": self.mute,
             "min_votes": self.min_votes
         }
 
         return dict
 
-    def handle(self, user, item=None):
+    def handle(self, user, payload=ReactionPayload(), item=None):
         if item is None and self.item is not None:
             item = self.item
-        else:
-            return None  # Exception
+
+        if type(item) != reddititem.RedditItem or item is None:
+            raise exceptions.NoItemGiven()
 
         if not self.eligible(item.item):
-            return None  # Exception
+            raise exceptions.NotEligibleItem()
 
-        item_type = item.type.title()
-        actions = list()
+        payload.feed(user, item, self.approve, self.reply)
 
-        try:
-            test = item.item.id
-        except:  # item was removed
-            if isinstance(item.item, praw.models.Submission) or isinstance(item.item, praw.models.Comment):
-                item.item.mod.remove()
-                actions.append("removed")
-                if isinstance(item.item, praw.models.Submission):
-                    item.item.mod.lock()
-                    actions.append("locked")
+        if isinstance(item.item, praw.models.ModmailMessage):
+            if self.archive:
+                item.item.conversation.archive()
+                payload.actions.append("archived")
+            if self.mute:
+                item.item.conversation.mute()
+                payload.actions.append("muted")
+            if self.reply != "":
+                item.item.conversation.reply(self.reply)
+                payload.actions.append("replied to")
+            return payload
 
-                action_string = " and ".join(actions)
-                return_string = "**{} {} by {}!**\n\n" \
-                                "{} by {}:\n\n".format(item_type, action_string, "Banhammer", item_type, "[deleted]")
-                return {
-                    "type": self.type,
-                    "approved": False,
-                    "message": return_string,
-                    "actions": actions
-                }
+        # is_submission = isinstance(item.item, praw.models.Submission)
+        # is_comment = isinstance(item.item, praw.models.Comment)
 
-        if isinstance(item.item, praw.models.Submission) or isinstance(item.item, praw.models.Comment):
-            if item.item.author is None:
-                item.item.mod.remove()
-                actions.append("removed")
-                if isinstance(item.item, praw.models.Submission):
-                    item.item.mod.lock()
-                    actions.append("locked")
+        if item.is_removed() or item.is_author_removed():
+            item.item.mod.remove()
+            payload.actions.append("removed")
+            item.item.mod.lock()
+            payload.actions.append("locked")
 
-                action_string = " and ".join(actions)
-                return_string = "**{} {} by {}!**\n\n" \
-                                "{} by {}:\n\n" \
-                                "{}".format(item_type, action_string, "Banhammer", item_type, "[deleted]",
-                                            item.get_url())
-                return {
-                    "type": self.type,
-                    "approved": False,
-                    "message": return_string,
-                    "actions": actions
-                }
+            payload.feed("Banhammer", item, False)
+            return payload
 
         if self.approve:
             item.item.mod.approve()
-            actions.append("approved")
+            payload.actions.append("approved")
         else:
             item.item.mod.remove()
-            actions.append("removed")
+            payload.actions.append("removed")
 
-        if isinstance(item.item, praw.models.Submission):
+        if self.lock or not self.approve:
+            item.item.mod.lock()
+            payload.actions.append("locked")
+        else:
+            item.item.mod.unlock()
+
+        if is_submission:
             if self.flair != "":
                 item.item.mod.flair(text=self.flair)
-                actions.append("flaired")
+                payload.actions.append("flaired")
 
             if self.mark_nsfw:
                 item.item.mod.nsfw()
-                actions.append("marked NSFW")
-
-            if self.lock or not self.approve:
-                item.item.mod.lock()
-                actions.append("locked")
-            else:
-                item.item.mod.unlock()
+                payload.actions.append("marked NSFW")
 
         if self.reply != "":
             reply = item.item.reply(self.reply)
-            reply.mod.distinguish(sticky=True)
-            actions.append("replied to")
+            if self.distinguish_reply: reply.mod.distinguish(sticky=self.sticky_reply)
+            payload.actions.append("replied to")
 
         if isinstance(self.ban, int):
             if self.ban == 0:
                 item.item.subreddit.banned.add(item.item.author.name, ban_reason="Breaking Rules",
                                                ban_message=formatter.format_ban_message(item.item, self.ban),
                                                note="Bot Ban")
-                actions.append("/u/" + item.item.author.name + " permanently banned")
+                payload.actions.append("/u/" + item.item.author.name + " permanently banned")
             else:
                 item.item.subreddit.banned.add(item.item.author.name, ban_reason="Breaking Rules", duration=self.ban,
                                                ban_message=formatter.format_ban_message(item.item, self.ban),
                                                note="Bot Ban")
-                actions.append("/u/{} banned for {} day(s)".format(item.item.author.name, self.ban))
+                payload.actions.append("/u/{} banned for {} day(s)".format(item.item.author.name, self.ban))
 
-        actions_string = " and ".join(actions)
+        item.remove("files/{}_reports.txt".format(item.subreddit.subreddit.id))
+        item.remove("files/{}_queue.txt".format(item.subreddit.subreddit.id))
 
-        return_string = "**{} {} by {}!**\n\n" \
-                        "{} by /u/{}:\n\n" \
-                        "{}".format(item_type, actions_string, user, item_type, item.item.author.name, item.get_url())
-
-        reports = "files/{}_reports.txt".format(item.subreddit.subreddit.id)
-        if os.path.exists(reports): item.remove(reports)
-        queue = "files/{}_queue.txt".format(item.subreddit.subreddit.id)
-        if os.path.exists(queue): item.remove(queue)
-
-        return {
-            "type": item.type,
-            "approved": self.approve,
-            "message": return_string,
-            "actions": actions
-        }
+        return payload
 
     def eligible(self, item):
         if isinstance(item, praw.models.Submission):
