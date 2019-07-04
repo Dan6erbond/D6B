@@ -24,7 +24,7 @@ async def on_member_join(member):
         welcome = "Hey, {0.mention}! Welcome to the server, read <#583963046884671507> before you disturb Ravi.".format(
             member)
         await bot.get_channel(583964848300490752).send(welcome)
-        await member.add_roles(member.guild.get_role(583969007724527636))
+        # await member.add_roles(member.guild.get_role(583969007724527636))
 
 
 @bot.event
