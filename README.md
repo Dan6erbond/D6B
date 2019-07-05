@@ -7,7 +7,7 @@ Besides the commands the bot is setup to welcome new users that join the guild w
 ### Commands
 D6B has a couple of commands, most of them are quite simple. All commands use the `$` prefix:
  - `help`: This is the default Discord.py implementation of the help command as it hasn't been altered yet.
- - `nick`: Sets your nickname in the server to a titled version of what's fed to the command.
+ - `nick`: Sets your nickname in the server to a titled version of what's fed to the command ('ravi' becomes 'Ravi').
  - `sad`: Reponds with "*S A D.*".
  - `subreddits`: Displays the configured subreddits for Banhammer in a neat embed.
  - `reactions`: Shows all the reactions that a subreddit has configured.
