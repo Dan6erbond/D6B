@@ -19,6 +19,10 @@ Using the Banhammer.py framework as well as some local files the bot keeps tabs 
 
 Before calling `bh.run()` the bot iterates through all the subreddits and adds them to Banhammer as well as when `$addsub` is called. Using this system you can have a category for many of your subreddits you want to moderate and handle them all from the same Discord server!
 
+#### Bot Presence
+To indicate when the bot is scanning a subreddit and commands will probably not be handled as PRAW blocks asyncio's event loop, the bot changes its presence to "Watching Reddit" during the scans:
+<img src="img/presence.jpg" width="250"/>
+
 ## Usage
 Though this bot isn't designed to be used by others, it is a GPL3.0 project which means you're free to use its code to build your own bot! It also serves as a good starting point for people trying to become familiar with Banhammer.py.
 
