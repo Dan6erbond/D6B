@@ -21,6 +21,7 @@ Before calling `bh.run()` the bot iterates through all the subreddits and adds t
 
 #### Bot Presence
 To indicate when the bot is scanning a subreddit and commands will probably not be handled as PRAW blocks asyncio's event loop, the bot changes its presence to "Watching Reddit" during the scans:
+
 <img src="img/presence.jpg" width="250"/>
 
 ## Usage
