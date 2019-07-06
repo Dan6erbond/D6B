@@ -14,7 +14,7 @@ D6B has a couple of commands, most of them are quite simple. All commands use th
  - `addsub` (admin only): Adds a subreddit to the `SUBREDDITS` category as well as the Banhammer instance.
  - `delsub` (admin only): Removes the current channel's assigned subreddit from the file as well as Banhammer.
  
-### Subreddit moderation
+### Subreddit Moderation
 Using the Banhammer.py framework as well as some local files the bot keeps tabs on what subreddits to scan as well as handle reactions for. It knows the `SUBREDDITS` category and maintains [subreddits.json](files/subreddits.json) which is a simple JSON list of subreddit's names as well as their channel's ID. With an iteration the bot then checks where content is to be sent to every time Banhammer calls `handle_item(item)`.
 
 Before calling `bh.run()` the bot iterates through all the subreddits and adds them to Banhammer as well as when `$addsub` is called. Using this system you can have a category for many of your subreddits you want to moderate and handle them all from the same Discord server!
