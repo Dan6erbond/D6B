@@ -117,3 +117,4 @@ dmypy.json
 praw.ini
 discord.ini
 login.py
+.idea
