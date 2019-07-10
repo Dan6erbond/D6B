@@ -8,7 +8,7 @@ from .item import *
 class Subreddit:
 
     def __init__(self, bh, dict={}, subreddit="", stream_new=True, stream_comments=False, stream_reports=True,
-                 stream_mail=True, stream_queue=True, stream_mod_actions=True):
+                 stream_mail=True, stream_queue=True, stream_mod_actions=True, custom_emotes=True):
         self.banhammer = bh
         self.reddit = bh.reddit
 
@@ -26,6 +26,7 @@ class Subreddit:
         self.stream_queue = dict["stream_queue"] if "stream_queue" in dict else stream_queue
         self.stream_mod_actions = dict["stream_mod_actions"] if "stream_mod_actions" in dict else stream_mod_actions
 
+        self.custom_emotes = dict["custom_emotes"] if "custom_emotes" in dict else custom_emotes
         self.reactions = list()
         self.load_reactions()
 
@@ -60,7 +61,8 @@ class Subreddit:
             "stream_reports": self.stream_reports,
             "stream_mail": self.stream_mail,
             "stream_queue": self.stream_queue,
-            "stream_mod_actions": self.stream_mod_actions
+            "stream_mod_actions": self.stream_mod_actions,
+            "custom_emotes": self.custom_emotes
         }
 
         return dict
@@ -75,11 +77,11 @@ class Subreddit:
         dict["get_mod_actions"] = self.get_mod_actions
         return dict
 
-    def load_reactions(self, custom=True):
-        if custom:
+    def load_reactions(self):
+        if self.custom_emotes:
             try:
                 reaction_page = self.subreddit.wiki['banhammer-reactions']
-                reacts = reaction.get_reactions(self.reddit, reaction_page.content_md)["reactions"]
+                reacts = reaction.get_reactions(reaction_page.content_md)["reactions"]
                 if len(reacts) > 0: self.reactions = reacts
             except prawcore.exceptions.NotFound:
                 pass
@@ -90,7 +92,7 @@ class Subreddit:
             dir_path = os.path.dirname(os.path.realpath(__file__))
             with open(dir_path + "/reactions.yaml", encoding="utf8") as f:
                 content = f.read()
-                self.reactions = reaction.get_reactions(self.reddit, content)["reactions"]
+                self.reactions = reaction.get_reactions(content)["reactions"]
                 try:
                     self.subreddit.wiki.create("banhammer-reactions", content, reason="Reactions not found")
                 except Exception as e:
@@ -108,8 +110,16 @@ class Subreddit:
             if reaction.emoji == emoji:
                 return reaction
 
-    def get_new(self):
-        if not self.stream_new:
+    def ignore_old(self):
+        for p in self.get_new(True): break
+        for p in self.get_comments(True): break
+        for p in self.get_reports(True): break
+        for p in self.get_mail(True): break
+        for p in self.get_queue(True): break
+        for p in self.get_mod_actions(override=True): break
+
+    def get_new(self, override=False):
+        if not self.stream_new and not override:
             return list()
         path = "files/{}_new.txt".format(self.subreddit.id)
         ids = list()
@@ -123,8 +133,8 @@ class Subreddit:
             item.save(path)
             yield item
 
-    def get_comments(self):
-        if not self.stream_comments:
+    def get_comments(self, override=False):
+        if not self.stream_comments and not override:
             return list()
         path = "files/{}_comments.txt".format(self.subreddit.id)
         ids = list()
@@ -132,14 +142,14 @@ class Subreddit:
             with open(path) as f:
                 ids = f.read().splitlines()
         for comment in self.subreddit.comments(limit=250):
-            if submission.id in ids:
+            if comment.id in ids:
                 break
             item = RedditItem(comment, self, "new")
             item.save(path)
             yield item
 
-    def get_reports(self):
-        if not self.stream_reports:
+    def get_reports(self, override=False):
+        if not self.stream_reports and not override:
             return list()
         path = "files/{}_reports.txt".format(self.subreddit.id)
         ids = list()
@@ -153,8 +163,8 @@ class Subreddit:
             item.save(path)
             yield item
 
-    def get_mail(self):
-        if not self.stream_mail:
+    def get_mail(self, override=False):
+        if not self.stream_mail and not override:
             return list()
         path = "files/{}_mail.txt".format(self.subreddit.id)
         ids = list()
@@ -170,8 +180,8 @@ class Subreddit:
                 item.save(path)
                 yield item
 
-    def get_queue(self):
-        if not self.stream_queue:
+    def get_queue(self, override=False):
+        if not self.stream_queue and not override:
             return list()
         path = "files/{}_queue.txt".format(self.subreddit.id)
         ids = list()
@@ -185,9 +195,9 @@ class Subreddit:
             item.save(path)
             yield item
 
-    def get_mod_actions(self, mods):
+    def get_mod_actions(self, mods=list(), override=False):
         mods = [m.lower() for m in mods]
-        if not self.stream_mod_actions:
+        if not self.stream_mod_actions and not override:
             return list()
         path = "files/{}_actions.txt".format(self.subreddit.id)
         ids = list()

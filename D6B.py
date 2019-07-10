@@ -150,7 +150,7 @@ async def on_raw_reaction_add(p):
     if item is None:
         return
     await m.delete()
-    await c.send(item.get_reaction(e).handle(u.nick)["message"])
+    await c.send(item.get_reaction(e).handle(user=u.nick))
 
 
 @bot.command()

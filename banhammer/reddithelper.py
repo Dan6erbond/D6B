@@ -18,16 +18,13 @@ def get_item(reddit, subreddits, str):
 
 def get_item_from_url(reddit, subreddits, url):
     if url.startswith("https://mod.reddit.com/mail/all/"):
-        id = url.strip()[-5:]
+        id = url.split("/")[-1] if url.split("/")[-1] != "" else url.split("/")[-2]
 
         for subreddit in subreddits:
             try:
                 modmail = subreddit.subreddit.modmail(id)
                 if hasattr(modmail, "subject"):
-                    return {
-                        "item": modmail,
-                        "subreddit": subreddit
-                    }
+                    return RedditItem(modmail, subreddit, url)
             except Exception as e:
                 print("{}: {}".format(type(e), e))
 
@@ -49,7 +46,7 @@ def get_item_from_url(reddit, subreddits, url):
     except:
         return None
 
-    sub = None
+    subreddit = None
     for sub in subreddits:
         if sub.subreddit.id == item.subreddit.id:
             subreddit = sub
@@ -58,7 +55,7 @@ def get_item_from_url(reddit, subreddits, url):
     if subreddit is None:
         return None
 
-    return RedditItem(item, sub, "url")
+    return RedditItem(item, subreddit, url)
 
 
 def is_url(url):
